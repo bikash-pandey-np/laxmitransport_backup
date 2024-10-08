@@ -1,0 +1,29 @@
+
+html {
+    font-size: 16px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+}
+
+body {
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff
+}
+
+.breadcrumb {
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    list-style: none;
+    background-color: #ffffff;
+    border-radius: 4px
+}
+
+.navbar {
+    position: relative;
+    min-height: 50px;
+    margin-bottom: 0px!important;
+    border: 1px solid transparent
+}
+

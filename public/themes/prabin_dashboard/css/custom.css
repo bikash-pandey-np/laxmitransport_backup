@@ -1,0 +1,154 @@
+/* your styles go here */
+
+.dataTables_length,.dataTables_info{
+    display: none;
+}
+
+.previous,.next,.paginate_button{
+    padding: 0px 10px;
+    border: 1px solid #000000;
+    color: #000;
+}
+
+.current, .paginate_button:hover, .next:hover, .previous:hover{
+    background-color: #000000;
+    color: #ffffff;
+}
+
+@media screen and (max-width: 575px) {
+    .tables{
+        margin-bottom: 30px;
+    }
+}
+
+.btn-xs{
+    height: 25px!important;
+    width: 25px!important;
+    padding: 0px!important;
+}
+
+.btn-xs i{
+    font-size: 12px;
+}
+
+.list-unstyled{
+    max-height: calc(100vh - 75px);
+    /*overflow-y: scroll;*/
+}
+
+.chat-list{
+    height: calc(100vh - 200px)!important;
+}
+
+.list-unstyled::-webkit-scrollbar {
+    display: none;
+}
+
+.validation_error{
+    border-bottom: 1px solid rgb(184, 17, 17)!important;
+    color: rgb(184, 17, 17)!important;
+}
+
+/*chat start*/
+
+.chat{
+    padding: 30px 0 0 0;
+}
+
+.sender{
+    float: left;
+}
+
+.receiver{
+    float: right;
+}
+
+.sender,.receiver{
+    display: flex;
+}
+
+.sender > .chat-message{
+    background-color: #ffffff;
+    color: #2f333e!important;
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+.receiver > .chat-message{
+    background-color: #796AEE;
+    color: #ffffff!important;
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+.chat-profile{
+    height: 45px;
+    width: 45px;
+}
+
+.sender > .chat-profile{
+    margin-right: 15px;
+}
+
+.receiver > .chat-profile{
+    margin-left: 15px;
+}
+
+.content-inner{
+    height: 500%;
+    min-height: calc(100vh - 75px);
+    padding-bottom: 0px;
+}
+
+.chat-box{
+    height: calc(100vh - 208px);
+    padding-bottom: 10px;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.chat-box::-webkit-scrollbar {
+    display: none;
+}
+
+.chat_send_btn{
+    background-color: #796AEE;
+    color: #ffffff;
+    margin-left: 10px;
+    width: 70px;
+    height: 40px;
+    border: none;
+    border-radius: 15px;
+}
+
+.chat_send_message{
+    height: 40px;
+    width: 100%;
+    border: 1px solid #000000;
+    border-radius: 15px;
+    padding: 0px 15px;
+}
+
+.green_light{
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+    background-color: green;
+}
+
+.yellow_light{
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+    background-color: yellow;
+}
+
+.red_light{
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+    background-color: red;
+}
+
+/*chat end*/
