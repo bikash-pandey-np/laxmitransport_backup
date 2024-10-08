@@ -1,6 +1,11 @@
 import React from "react";
 const Test = () => {
-    return <h1>Hello World</h1>;
+
+    return (
+        <div className="container mx-auto">
+            <h1 className="text-2xl text-blue-500">Welcome to the Dashboard</h1>
+        </div>
+    );
 };
 
 export default Test;
