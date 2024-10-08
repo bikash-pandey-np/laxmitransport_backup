@@ -38,4 +38,13 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof \Illuminate\Validation\ValidationException) {
+            return back()->withErrors($e->errors());
+        }
+
+        return parent::render($request, $e);
+    }
 }
