@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use \App\Events\Chat;
 use App\Events\RealTimeMessage;
-
+use Inertia\Inertia;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,7 +15,7 @@ use App\Events\RealTimeMessage;
 |
 */
 Route::get('test', function(){
- return 'test';
+ return Inertia::render('Test');
 });
 Route::get('/', 'HomeController@home')->name('home');
 Route::get('/aboutus', 'HomeController@aboutus')->name('aboutus');
