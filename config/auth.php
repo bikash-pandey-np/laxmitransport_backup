@@ -56,6 +56,10 @@ return [
             'driver' => 'passport',
             'provider' => 'drivers',
         ],
+        'shipper' => [
+            'driver' => 'session',
+            'provider' => 'shippers',
+        ],
     ],
 
     /*
@@ -96,6 +100,10 @@ return [
             'model' => \App\Models\Carrier::class,
         ],
 
+        'shippers' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\Shipper::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

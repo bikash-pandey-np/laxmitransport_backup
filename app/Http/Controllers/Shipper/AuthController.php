@@ -9,6 +9,8 @@ use App\Models\Shipper;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
 class AuthController extends Controller
 {
     public function register()
@@ -17,6 +19,33 @@ class AuthController extends Controller
             'title' => 'Register - ' . env('SHIPPER_APP_NAME'),
         ]);
     }
+
+    public function login()
+    {
+        return Inertia::render('Shipper/Auth/Login', [
+            'title' => 'Login - ' . env('SHIPPER_APP_NAME'),
+        ]);
+    }
+
+    public function handleLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|exists:shippers,email',
+            'password' => 'required',
+        ]);
+
+        //check if account is blocked 
+        $shipper = Shipper::where('email', $request->email)->first();
+        if(!$shipper->is_active){
+            return back()->with('error', 'Your account is not active');
+        }
+
+        if(!(Auth::guard('shipper')->attempt($request->only('email', 'password')))){
+            return back()->with('error', 'Invalid credentials');
+        }
+
+        return 'to dashboard';
+    }   
 
 
     public function store(Request $request)
