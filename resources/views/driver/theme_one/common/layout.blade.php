@@ -280,7 +280,7 @@
         </div>
     </div>
 </div>
-<script src="{{ mix('/js/app.js') }}"></script>
+@vite('resources/js/app.js') <!-- Adjust if necessary -->
 <script src="{{ asset('themes/prabin_dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('themes/prabin_dashboard/vendor/chart.js/Chart.min.js') }}"></script>
 <script src="{{ asset('themes/prabin_dashboard/vendor/just-validate/js/just-validate.min.js') }}"></script>

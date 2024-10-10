@@ -8,7 +8,7 @@ import autoprefixer from 'autoprefixer';
 export default defineConfig({                                                        
     plugins: [                                                                       
         laravel({                                                                    
-            input: ['resources/css/tailwind.css', 'resources/js/inertia.jsx'],                
+            input: ['resources/css/tailwind.css', 'resources/js/inertia.jsx', 'resources/js/app.js'],                
             refresh: true,                                                           
         }),                                                                          
     ],                                                                               
