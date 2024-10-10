@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import Layout from '../Layout';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const Index = ({title}) => {
     const [activeTab, setActiveTab] = useState('Parcel');
@@ -10,12 +10,17 @@ const Index = ({title}) => {
         loadOrigin: '',
         pickupDate: '',
         deliverDestination: '',
-        items: []
+        items: [],
+        truckType: '',
+        deliveryDate: '',
+        stops: [],
+        specialDeliveryInstruction: ''
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle form submission
+        console.log(data);
+        post('/shipper/quote');
     };
 
     const handleTabChange = (tabName) => {
@@ -55,7 +60,48 @@ const Index = ({title}) => {
         setData('items', updatedItems);
     };
 
+    const addStop = () => {
+        setData('stops', [...data.stops, {
+            address: '',
+            items: []
+        }]);
+    };
+
+    const updateStop = (index, field, value) => {
+        const updatedStops = [...data.stops];
+        updatedStops[index][field] = value;
+        setData('stops', updatedStops);
+    };
+
+    const addItemToStop = (stopIndex) => {
+        const updatedStops = [...data.stops];
+        updatedStops[stopIndex].items.push({
+            description: '',
+            quantity: '',
+            totalWeight: '',
+            length: '',
+            width: '',
+            height: '',
+            packagingType: '',
+            isStackable: 'no'
+        });
+        setData('stops', updatedStops);
+    };
+
+    const updateItemInStop = (stopIndex, itemIndex, field, value) => {
+        const updatedStops = [...data.stops];
+        updatedStops[stopIndex].items[itemIndex][field] = value;
+        setData('stops', updatedStops);
+    };
+
+    const removeStop = (index) => {
+        const updatedStops = [...data.stops];
+        updatedStops.splice(index, 1);
+        setData('stops', updatedStops);
+    };
+
     const packagingTypes = ['Box', 'Pallet', 'Crate', 'Drum', 'Other'];
+    const truckTypes = ['Dry Van', 'Refrigerated', 'Flatbed', 'Step Deck', 'Lowboy', 'RGN'];
 
     return (
         <Layout>
@@ -69,7 +115,7 @@ const Index = ({title}) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {activeTab === 'Parcel' && (
+                    {(activeTab === 'Parcel' || activeTab === 'LTL') && (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
@@ -81,6 +127,7 @@ const Index = ({title}) => {
                                         className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="Enter pickup location"
                                     />
+                                    {errors.loadOrigin && <div className="text-red-500 text-sm mt-1">{errors.loadOrigin}</div>}
                                 </div>
                                 <div>
                                     <label className="block mb-2 font-medium text-gray-700">Destination:</label>
@@ -91,6 +138,7 @@ const Index = ({title}) => {
                                         className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="Enter delivery location"
                                     />
+                                    {errors.deliverDestination && <div className="text-red-500 text-sm mt-1">{errors.deliverDestination}</div>}
                                 </div>
                             </div>
                             <div>
@@ -101,6 +149,18 @@ const Index = ({title}) => {
                                     onChange={e => setData('pickupDate', e.target.value)}
                                     className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
+                                {errors.pickupDate && <div className="text-red-500 text-sm mt-1">{errors.pickupDate}</div>}
+                            </div>
+                            <div>
+                                <label className="block mb-2 font-medium text-gray-700">Special Delivery Instruction:</label>
+                                <textarea 
+                                    value={data.specialDeliveryInstruction}
+                                    onChange={e => setData('specialDeliveryInstruction', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    rows="3"
+                                    placeholder="Enter any special delivery instructions"
+                                />
+                                {errors.specialDeliveryInstruction && <div className="text-red-500 text-sm mt-1">{errors.specialDeliveryInstruction}</div>}
                             </div>
                             <div>
                                 <label className="block mb-2 font-medium text-gray-700">Items:</label>
@@ -116,6 +176,7 @@ const Index = ({title}) => {
                                                     className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     rows="3"
                                                 />
+                                                {errors[`items.${index}.description`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.description`]}</div>}
                                             </label>
                                             <label className="block">
                                                 <span className="text-gray-700">Packaging Type:</span>
@@ -129,6 +190,7 @@ const Index = ({title}) => {
                                                         <option key={type} value={type}>{type}</option>
                                                     ))}
                                                 </select>
+                                                {errors[`items.${index}.packagingType`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.packagingType`]}</div>}
                                             </label>
                                             <div className="flex items-center">
                                                 <span className="mr-4 text-gray-700">Is Stackable:</span>
@@ -150,6 +212,7 @@ const Index = ({title}) => {
                                                     />
                                                     No
                                                 </label>
+                                                {errors[`items.${index}.isStackable`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.isStackable`]}</div>}
                                             </div>
                                             <label className="block">
                                                 <span className="text-gray-700">Quantity:</span>
@@ -160,6 +223,7 @@ const Index = ({title}) => {
                                                     placeholder="Quantity"
                                                     className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 />
+                                                {errors[`items.${index}.quantity`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.quantity`]}</div>}
                                             </label>
                                             <label className="block">
                                                 <span className="text-gray-700">Total Weight:</span>
@@ -170,6 +234,7 @@ const Index = ({title}) => {
                                                     placeholder="Total weight"
                                                     className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 />
+                                                {errors[`items.${index}.totalWeight`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.totalWeight`]}</div>}
                                             </label>
                                             <div className="grid grid-cols-3 gap-4">
                                                 <label className="block">
@@ -181,6 +246,7 @@ const Index = ({title}) => {
                                                         placeholder="Length"
                                                         className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     />
+                                                    {errors[`items.${index}.length`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.length`]}</div>}
                                                 </label>
                                                 <label className="block">
                                                     <span className="text-gray-700">Width (Inches):</span>
@@ -191,6 +257,7 @@ const Index = ({title}) => {
                                                         placeholder="Width"
                                                         className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     />
+                                                    {errors[`items.${index}.width`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.width`]}</div>}
                                                 </label>
                                                 <label className="block">
                                                     <span className="text-gray-700">Height (Inches):</span>
@@ -201,6 +268,7 @@ const Index = ({title}) => {
                                                         placeholder="Height"
                                                         className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     />
+                                                    {errors[`items.${index}.height`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.height`]}</div>}
                                                 </label>
                                             </div>
                                         </div>
@@ -213,6 +281,201 @@ const Index = ({title}) => {
                                 >
                                     <FaPlus className="mr-2" />
                                     Add Item
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {activeTab === 'TruckLoad' && (
+                        <>
+                            <div>
+                                <label className="block mb-2 font-medium text-gray-700">Truck Type:</label>
+                                <select
+                                    value={data.truckType}
+                                    onChange={(e) => setData('truckType', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Select truck type</option>
+                                    {truckTypes.map((type) => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                                {errors.truckType && <div className="text-red-500 text-sm mt-1">{errors.truckType}</div>}
+                            </div>
+                            <div>
+                                <label className="block mb-2 font-medium text-gray-700">Delivery Date:</label>
+                                <input 
+                                    type="date" 
+                                    value={data.deliveryDate}
+                                    onChange={e => setData('deliveryDate', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                {errors.deliveryDate && <div className="text-red-500 text-sm mt-1">{errors.deliveryDate}</div>}
+                            </div>
+                            <div>
+                                <label className="block mb-2 font-medium text-gray-700">Special Delivery Instruction:</label>
+                                <textarea 
+                                    value={data.specialDeliveryInstruction}
+                                    onChange={e => setData('specialDeliveryInstruction', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    rows="3"
+                                    placeholder="Enter any special delivery instructions"
+                                />
+                                {errors.specialDeliveryInstruction && <div className="text-red-500 text-sm mt-1">{errors.specialDeliveryInstruction}</div>}
+                            </div>
+                            <div>
+                                <label className="block mb-2 font-medium text-gray-700">Stops:</label>
+                                {data.stops.map((stop, stopIndex) => (
+                                    <div key={stopIndex} className="mb-4 p-4 border border-gray-300 rounded-md shadow-lg transition-shadow duration-300 hover:shadow-xl">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h3 className="text-lg font-semibold">Stop {stopIndex + 1}</h3>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeStop(stopIndex)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </div>
+                                        <label className="block mb-2">
+                                            <span className="text-gray-700">Address:</span>
+                                            <input
+                                                type="text"
+                                                value={stop.address}
+                                                onChange={(e) => updateStop(stopIndex, 'address', e.target.value)}
+                                                placeholder="Enter address"
+                                                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                            {errors[`stops.${stopIndex}.address`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.address`]}</div>}
+                                        </label>
+                                        <div>
+                                            <h4 className="font-medium mb-2">Items:</h4>
+                                            {stop.items.map((item, itemIndex) => (
+                                                <div key={itemIndex} className="mb-2 p-2 border border-gray-200 rounded">
+                                                    <label className="block mb-1">
+                                                        <span className="text-gray-700">Description:</span>
+                                                        <input
+                                                            type="text"
+                                                            value={item.description}
+                                                            onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'description', e.target.value)}
+                                                            placeholder="Item description"
+                                                            className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        />
+                                                        {errors[`stops.${stopIndex}.items.${itemIndex}.description`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.description`]}</div>}
+                                                    </label>
+                                                    <label className="block mb-1">
+                                                        <span className="text-gray-700">Quantity:</span>
+                                                        <input
+                                                            type="number"
+                                                            value={item.quantity}
+                                                            onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'quantity', e.target.value)}
+                                                            placeholder="Quantity"
+                                                            className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        />
+                                                        {errors[`stops.${stopIndex}.items.${itemIndex}.quantity`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.quantity`]}</div>}
+                                                    </label>
+                                                    <label className="block mb-1">
+                                                        <span className="text-gray-700">Total Weight:</span>
+                                                        <input
+                                                            type="number"
+                                                            value={item.totalWeight}
+                                                            onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'totalWeight', e.target.value)}
+                                                            placeholder="Total weight"
+                                                            className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        />
+                                                        {errors[`stops.${stopIndex}.items.${itemIndex}.totalWeight`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.totalWeight`]}</div>}
+                                                    </label>
+                                                    <div className="grid grid-cols-3 gap-4 mb-1">
+                                                        <label className="block">
+                                                            <span className="text-gray-700">Length (Inches):</span>
+                                                            <input
+                                                                type="number"
+                                                                value={item.length}
+                                                                onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'length', e.target.value)}
+                                                                placeholder="Length"
+                                                                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                            />
+                                                            {errors[`stops.${stopIndex}.items.${itemIndex}.length`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.length`]}</div>}
+                                                        </label>
+                                                        <label className="block">
+                                                            <span className="text-gray-700">Width (Inches):</span>
+                                                            <input
+                                                                type="number"
+                                                                value={item.width}
+                                                                onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'width', e.target.value)}
+                                                                placeholder="Width"
+                                                                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                            />
+                                                            {errors[`stops.${stopIndex}.items.${itemIndex}.width`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.width`]}</div>}
+                                                        </label>
+                                                        <label className="block">
+                                                            <span className="text-gray-700">Height (Inches):</span>
+                                                            <input
+                                                                type="number"
+                                                                value={item.height}
+                                                                onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'height', e.target.value)}
+                                                                placeholder="Height"
+                                                                className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                            />
+                                                            {errors[`stops.${stopIndex}.items.${itemIndex}.height`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.height`]}</div>}
+                                                        </label>
+                                                    </div>
+                                                    <label className="block mb-1">
+                                                        <span className="text-gray-700">Packaging Type:</span>
+                                                        <select
+                                                            value={item.packagingType}
+                                                            onChange={(e) => updateItemInStop(stopIndex, itemIndex, 'packagingType', e.target.value)}
+                                                            className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        >
+                                                            <option value="">Select packaging type</option>
+                                                            {packagingTypes.map((type) => (
+                                                                <option key={type} value={type}>{type}</option>
+                                                            ))}
+                                                        </select>
+                                                        {errors[`stops.${stopIndex}.items.${itemIndex}.packagingType`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.packagingType`]}</div>}
+                                                    </label>
+                                                    <div className="flex items-center mb-1">
+                                                        <span className="mr-4 text-gray-700">Is Stackable:</span>
+                                                        <label className="mr-4">
+                                                            <input
+                                                                type="radio"
+                                                                checked={item.isStackable === 'yes'}
+                                                                onChange={() => updateItemInStop(stopIndex, itemIndex, 'isStackable', 'yes')}
+                                                                className="mr-2"
+                                                            />
+                                                            Yes
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="radio"
+                                                                checked={item.isStackable === 'no'}
+                                                                onChange={() => updateItemInStop(stopIndex, itemIndex, 'isStackable', 'no')}
+                                                                className="mr-2"
+                                                            />
+                                                            No
+                                                        </label>
+                                                        {errors[`stops.${stopIndex}.items.${itemIndex}.isStackable`] && <div className="text-red-500 text-sm mt-1">{errors[`stops.${stopIndex}.items.${itemIndex}.isStackable`]}</div>}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => addItemToStop(stopIndex)}
+                                                className="mt-2 p-2 text-blue-500 border border-blue-500 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                                            >
+                                                <FaPlus className="inline mr-2" />
+                                                Add Item
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={addStop}
+                                    className="flex items-center justify-center w-full p-2 mt-2 text-blue-500 border border-blue-500 rounded-md hover:bg-blue-50 transition-colors duration-200 shadow-md hover:shadow-lg"
+                                >
+                                    <FaPlus className="mr-2" />
+                                    Add Stop
                                 </button>
                             </div>
                         </>

@@ -1,9 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/inertia-react';
+import { usePage } from '@inertiajs/inertia-react';
+import { ToastContainer, toast } from 'react-toastify';
 import { FaHome, FaQuoteRight, FaShippingFast, FaTruck, FaUserCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { RiMenuLine } from 'react-icons/ri';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Layout = ({ children }) => {
+    const { flash, auth_name } = usePage().props;
+
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const profileRef = useRef(null);
@@ -17,6 +22,19 @@ const Layout = ({ children }) => {
                 setIsProfileOpen(false);
             }
         };
+
+        console.log('flash useEffect',flash);
+
+        if(flash.success){
+            toast.dismiss();
+            toast.success(flash.success);
+        }
+        if(flash.error){
+            toast.dismiss();
+            toast.error(flash.error);
+        }
+
+
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
@@ -33,6 +51,7 @@ const Layout = ({ children }) => {
 
     return (
         <div className="min-h-screen bg-gray-100">
+
             <nav className="bg-indigo-600 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -56,10 +75,13 @@ const Layout = ({ children }) => {
                                 <div>
                                     <button
                                         onClick={toggleProfile}
-                                        className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white"
+                                        className="flex items-center text-sm px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white"
                                     >
                                         <span className="sr-only">Open user menu</span>
-                                        <FaUserCircle className="h-8 w-8 text-white" />
+                                        <div className="flex items-center">
+                                            <FaUserCircle className="h-8 w-8 text-white" />
+                                            <span className="text-white ml-2">{auth_name}</span>
+                                        </div>
                                     </button>
                                 </div>
                                 {isProfileOpen && (
@@ -125,6 +147,7 @@ const Layout = ({ children }) => {
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 {children}
             </main>
+            <ToastContainer />
         </div>
     );
 };

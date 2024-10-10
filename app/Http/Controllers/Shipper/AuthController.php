@@ -44,7 +44,8 @@ class AuthController extends Controller
             return back()->with('error', 'Invalid credentials');
         }
 
-        return 'to dashboard';
+        return redirect()->route('shipper.dashboard')->with('success', 'Login successful');
+
     }   
 
 

@@ -33,5 +33,8 @@ Route::middleware('onlyShipper')->group(function(){
     ->name('shipper.dashboard');
     
     Route::get('/quote', [QuoteController::class, 'getQuotePage'])
-    ->name('shipper.quote');
+        ->name('shipper.quote');
+
+    Route::post('/quote', [QuoteController::class, 'getQuote']);
+
 });
