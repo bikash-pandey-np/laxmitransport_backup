@@ -83,7 +83,7 @@ class AuthController extends Controller
         try {
             // Intentionally causing an error by accessing a non-existent property
 
-            Shipper::create([
+            $user = Shipper::create([
                 'business_name' => $request->business_name,
                 'vat_no' => $request->vat_no,
                 'email' => $request->email,
@@ -96,12 +96,21 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            return back()->with('success', 'Shipper registered successfully');
+            Auth::guard('shipper')->login($user);
+
+            return redirect()->route('shipper.dashboard')->with('success', 'Shipper registered successfully');
+
 
         } catch (Throwable $th) {
             Log::error('AuthController@store', ['error' => $th->getMessage()]);
             return back()->with('error', 'Something went wrong')->withErrors(['form_error' => 'Something went wrong']);
         }
+    }
+
+    public function logout()
+    {
+        Auth::guard('shipper')->logout();
+        return redirect()->route('shipper.auth.login')->with('success', 'You have been logged out');
     }
    
 }

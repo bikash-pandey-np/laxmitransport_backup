@@ -74,5 +74,6 @@ class Kernel extends HttpKernel
         'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
         'extra_signup' => DriverExtraSignup::class,
         'onlyShipper' => \App\Http\Middleware\OnlyShipper::class,
+        'shipper_already_logged_in' => \App\Http\Middleware\ShipperAlreadyLoggedIn::class,
     ];
 }

@@ -174,7 +174,7 @@ const Login = ({ flash, title }) => {
 
                                 <p className="mt-4 text-sm text-gray-500 sm:mt-0">
                                     Don't have an account?
-                                    <a href="#" className="text-gray-700 underline">Register</a>.
+                                    <a href="/shipper/register" className="text-gray-700 underline">Register</a>.
                                 </p>
                             </div>
                         </form>

@@ -9,15 +9,13 @@ use Inertia\Inertia;
 
 Route::prefix('register')->group(function(){
     Route::get('/', [AuthController::class, 'register'])
-        ->name('shipper.auth.register');
-
+        ->name('shipper.auth.register')->middleware('shipper_already_logged_in');
     Route::post('/', [AuthController::class, 'store']);
 });
 
 Route::prefix('login')->group(function(){
     Route::get('/', [AuthController::class, 'login'])
-        ->name('shipper.auth.login');
-
+        ->name('shipper.auth.login')->middleware('shipper_already_logged_in');
     Route::post('/', [AuthController::class, 'handleLogin']);
 });
 
@@ -29,6 +27,14 @@ Route::prefix('location')->group(function(){
 
 //protected routes
 Route::middleware('onlyShipper')->group(function(){
+
+    Route::get('/', function(){
+        return redirect()->route('shipper.dashboard');
+    });
+    //logout 
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('shipper.logout');
+
     Route::get('/dashboard', [DashboardController::class, 'getDashboard'])
     ->name('shipper.dashboard');
     

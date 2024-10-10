@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/inertia-react';
 import { usePage } from '@inertiajs/inertia-react';
 import { ToastContainer, toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { Inertia } from '@inertiajs/inertia';
 import { FaHome, FaQuoteRight, FaShippingFast, FaTruck, FaUserCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { RiMenuLine } from 'react-icons/ri';
 import 'react-toastify/dist/ReactToastify.css';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const Layout = ({ children }) => {
     const { flash, auth_name } = usePage().props;
@@ -42,6 +45,23 @@ const Layout = ({ children }) => {
         };
     }, []);
 
+    const handleLogout = (e) => {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout!'
+        }).then((result) => {   
+            if (result.isConfirmed) {
+                Inertia.post('/shipper/logout');
+            }
+        });
+    }
+
     const menuItems = [
         { name: 'Dashboard', icon: <FaHome />, href: '/shipper/dashboard' },
         { name: 'Quotes', icon: <FaQuoteRight />, href: '/shipper/quote' },
@@ -57,7 +77,7 @@ const Layout = ({ children }) => {
                     <div className="flex justify-between h-16">
                         <div className="flex-shrink-0 flex items-center">
                             <Link href="/shipper/dashboard" className="text-white font-bold text-xl">
-                                ShipperLogo
+                                Our Logo
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -92,7 +112,7 @@ const Layout = ({ children }) => {
                                         <Link href="/shipper/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                             <FaCog className="inline-block mr-2" /> Settings
                                         </Link>
-                                        <Link href="/shipper/logout" method="post" as="button" className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <Link onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                             <FaSignOutAlt className="inline-block mr-2" /> Logout
                                         </Link>
                                     </div>
@@ -135,7 +155,7 @@ const Layout = ({ children }) => {
                                     <FaCog className="mr-2" /> Settings
                                 </div>
                             </Link>
-                            <Link href="/shipper/logout" method="post" as="button" className="text-gray-300 hover:bg-indigo-700 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">
+                            <Link onClick={handleLogout} className="text-gray-300 hover:bg-indigo-700 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">
                                 <div className="flex items-center">
                                     <FaSignOutAlt className="mr-2" /> Logout
                                 </div>
