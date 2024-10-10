@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite('resources/js/app.jsx') <!-- Adjust if necessary -->
+    @vite('resources/js/inertia.jsx') <!-- Adjust if necessary -->
 </head>
 <body>
     @inertia
