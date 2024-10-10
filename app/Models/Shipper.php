@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\State;
 use App\Models\District;
 use App\Models\LocalBody;
 
-class Shipper extends Authenticatable
+class Shipper extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 

@@ -25,12 +25,22 @@ Route::prefix('location')->group(function(){
     Route::get('/local-bodies', [LocationController::class, 'getLocalBodies']);
 });
 
+Route::middleware(['onlyShipper'])->group(function(){
+
+    Route::prefix('verify-email')->group(function(){
+    Route::get('/', [AuthController::class, 'getVerifyPage'])
+        ->name('shipper.auth.verify');
+        Route::post('/send-email', [AuthController::class, 'sendEmail']);
+    });
+});
+
 //protected routes
-Route::middleware('onlyShipper')->group(function(){
+Route::middleware(['onlyShipper', 'shipper_must_verify_email'])->group(function(){
 
     Route::get('/', function(){
         return redirect()->route('shipper.dashboard');
     });
+
     //logout 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('shipper.logout');

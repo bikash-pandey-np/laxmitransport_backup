@@ -75,5 +75,6 @@ class Kernel extends HttpKernel
         'extra_signup' => DriverExtraSignup::class,
         'onlyShipper' => \App\Http\Middleware\OnlyShipper::class,
         'shipper_already_logged_in' => \App\Http\Middleware\ShipperAlreadyLoggedIn::class,
+        'shipper_must_verify_email' => \App\Http\Middleware\ShipperMustVerifyEmail::class,
     ];
 }

@@ -5,8 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-class OnlyShipper
+
+class ShipperMustVerifyEmail
 {
     /**
      * Handle an incoming request.
@@ -17,11 +17,9 @@ class OnlyShipper
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!(Auth::guard('shipper')->check())) {
-            return redirect()->route('shipper.auth.login')
-                ->with('error', 'Please Login First');
+        if(!Auth::guard('shipper')->user()->is_email_verified){
+            return redirect()->route('shipper.auth.verify');
         }
         return $next($request);
-        
     }
 }
