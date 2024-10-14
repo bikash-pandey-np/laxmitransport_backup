@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Otp;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Shipper\VerifyEmail;
 
 class AuthController extends Controller
 {
@@ -165,12 +167,16 @@ class AuthController extends Controller
                 $otp->delete();
             }
 
+            $token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $otp = Otp::create([
                 'email' => $email,
-                'otp' => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
+                'otp' => $token,
             ]);
 
-           
+            Mail::to($email)->queue(new VerifyEmail([
+                'name' => $shipper->business_name,
+                'otp' => $token
+            ]));
 
             return response()->json([
                 'error' => false,
