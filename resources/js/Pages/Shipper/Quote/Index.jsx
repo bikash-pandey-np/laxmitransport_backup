@@ -1,26 +1,97 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import Layout from '../Layout';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const Index = ({title}) => {
     const [activeTab, setActiveTab] = useState('Parcel');
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         loadType: 'Parcel',
         loadOrigin: '',
         pickupDate: '',
         deliverDestination: '',
-        items: [],
+        items: [{
+            description: '',
+            packagingType: '',
+            isStackable: 'no',
+            quantity: '',
+            totalWeight: '',
+            length: '',
+            width: '',
+            height: ''
+        }],
         truckType: '',
         deliveryDate: '',
-        stops: [],
+        stops: [{
+            address: '',
+            items: [{
+                description: '',
+                quantity: '',
+                totalWeight: '',
+                length: '',
+                width: '',
+                height: '',
+                packagingType: '',
+                isStackable: 'no'
+            }]
+        }],
         specialDeliveryInstruction: ''
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(data);
-        post('/shipper/quote');
+        console.log('clicked');
+        clearErrors();
+        let hasErrors = false;
+
+        // Check for empty fields
+        Object.keys(data).forEach(key => {
+            if (data[key] === '' || (Array.isArray(data[key]) && data[key].length === 0)) {
+                setError(key, 'This field is required.');
+                hasErrors = true;
+            }
+        });
+
+        if (data.loadType === 'Parcel' || data.loadType === 'LTL') {
+            if (data.items.length === 0) {
+                setError('items', 'At least one item is required for Parcel and LTL shipments.');
+                hasErrors = true;
+            } else {
+                data.items.forEach((item, index) => {
+                    Object.keys(item).forEach(key => {
+                        if (item[key] === '') {
+                            setError(`items.${index}.${key}`, 'This field is required.');
+                            hasErrors = true;
+                        }
+                    });
+                });
+            }
+        } else if (data.loadType === 'TruckLoad') {
+            if (data.stops.length === 0) {
+                setError('stops', 'At least one stop is required for TruckLoad shipments.');
+                hasErrors = true;
+            } else {
+                data.stops.forEach((stop, stopIndex) => {
+                    if (stop.address === '') {
+                        setError(`stops.${stopIndex}.address`, 'Address is required.');
+                        hasErrors = true;
+                    }
+                    stop.items.forEach((item, itemIndex) => {
+                        Object.keys(item).forEach(key => {
+                            if (item[key] === '') {
+                                setError(`stops.${stopIndex}.items.${itemIndex}.${key}`, 'This field is required.');
+                                hasErrors = true;
+                            }
+                        });
+                    });
+                });
+            }
+        }
+
+        if (!hasErrors) {
+            console.log(data);
+            post('/shipper/quote');
+        }
     };
 
     const handleTabChange = (tabName) => {
@@ -176,7 +247,6 @@ const Index = ({title}) => {
                                                     className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     rows="3"
                                                 />
-                                                {errors[`items.${index}.description`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.description`]}</div>}
                                             </label>
                                             <label className="block">
                                                 <span className="text-gray-700">Packaging Type:</span>
@@ -190,7 +260,6 @@ const Index = ({title}) => {
                                                         <option key={type} value={type}>{type}</option>
                                                     ))}
                                                 </select>
-                                                {errors[`items.${index}.packagingType`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.packagingType`]}</div>}
                                             </label>
                                             <div className="flex items-center">
                                                 <span className="mr-4 text-gray-700">Is Stackable:</span>
@@ -212,7 +281,6 @@ const Index = ({title}) => {
                                                     />
                                                     No
                                                 </label>
-                                                {errors[`items.${index}.isStackable`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.isStackable`]}</div>}
                                             </div>
                                             <label className="block">
                                                 <span className="text-gray-700">Quantity:</span>
@@ -223,7 +291,6 @@ const Index = ({title}) => {
                                                     placeholder="Quantity"
                                                     className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 />
-                                                {errors[`items.${index}.quantity`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.quantity`]}</div>}
                                             </label>
                                             <label className="block">
                                                 <span className="text-gray-700">Total Weight:</span>
@@ -234,7 +301,6 @@ const Index = ({title}) => {
                                                     placeholder="Total weight"
                                                     className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 />
-                                                {errors[`items.${index}.totalWeight`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.totalWeight`]}</div>}
                                             </label>
                                             <div className="grid grid-cols-3 gap-4">
                                                 <label className="block">
@@ -246,7 +312,6 @@ const Index = ({title}) => {
                                                         placeholder="Length"
                                                         className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     />
-                                                    {errors[`items.${index}.length`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.length`]}</div>}
                                                 </label>
                                                 <label className="block">
                                                     <span className="text-gray-700">Width (Inches):</span>
@@ -257,7 +322,6 @@ const Index = ({title}) => {
                                                         placeholder="Width"
                                                         className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     />
-                                                    {errors[`items.${index}.width`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.width`]}</div>}
                                                 </label>
                                                 <label className="block">
                                                     <span className="text-gray-700">Height (Inches):</span>
@@ -268,7 +332,6 @@ const Index = ({title}) => {
                                                         placeholder="Height"
                                                         className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     />
-                                                    {errors[`items.${index}.height`] && <div className="text-red-500 text-sm mt-1">{errors[`items.${index}.height`]}</div>}
                                                 </label>
                                             </div>
                                         </div>

@@ -23,7 +23,7 @@ class QuoteController extends Controller
             'loadOrigin' => 'required',
             'pickupDate' => 'required|date',
             'deliverDestination' => 'required',
-            'items' => 'required|array|min:1',
+            'items' => 'required_if:loadType,Parcel,LTL|array|min:1',
             'items.*.description' => 'required',
             'items.*.packagingType' => 'required',
             'items.*.isStackable' => 'required|in:yes,no',
@@ -35,8 +35,8 @@ class QuoteController extends Controller
             'truckType' => 'required_if:loadType,TruckLoad',
             'deliveryDate' => 'required_if:loadType,TruckLoad',
             'stops' => 'required_if:loadType,TruckLoad|array|min:1',
-            'stops.*.address' => 'required',
-            'stops.*.items' => 'required|array|min:1',
+            'stops.*.address' => 'required_if:loadType,TruckLoad',
+            'stops.*.items' => 'required_if:loadType,TruckLoad|array|min:1',
             'stops.*.items.*.description' => 'required',
             'stops.*.items.*.quantity' => 'required|integer|min:1',
             'stops.*.items.*.totalWeight' => 'required|numeric|min:0',
@@ -48,7 +48,12 @@ class QuoteController extends Controller
             'specialDeliveryInstruction' => 'nullable',
         ];
 
-        $request->validate($rules);
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
 
         dd('validation passed');
     }

@@ -119,9 +119,11 @@ class AuthController extends Controller
         }
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::guard('shipper')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect()->route('shipper.auth.login')->with('success', 'You have been logged out');
     }
 
@@ -191,5 +193,33 @@ class AuthController extends Controller
                 'message' => 'Something went wrong',
             ], 200);
         }
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|digits:6',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $email = Auth::guard('shipper')->user()->email;
+        $otp = Otp::where('email', $email)->first();
+
+        if (!$otp) {
+            return back()->with('error', 'OTP not found');
+        }
+
+        if ($otp->otp != $request->otp) {
+            return back()->with('error', 'Invalid OTP');
+        }   
+
+        $shipper = Shipper::where('email', $email)->first();
+        $shipper->is_email_verified = true;
+        $shipper->save();
+
+        return redirect()->route('shipper.dashboard')->with('success', 'Email verified successfully');
     }
 }

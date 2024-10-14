@@ -32,6 +32,11 @@ Route::middleware(['onlyShipper'])->group(function(){
         ->name('shipper.auth.verify');
         Route::post('/send-email', [AuthController::class, 'sendEmail']);
     });
+
+    Route::post('/verify', [AuthController::class, 'verifyEmail']);
+
+  
+    
 });
 
 //protected routes
@@ -41,7 +46,8 @@ Route::middleware(['onlyShipper', 'shipper_must_verify_email'])->group(function(
         return redirect()->route('shipper.dashboard');
     });
 
-    //logout 
+
+
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('shipper.logout');
 
@@ -54,3 +60,5 @@ Route::middleware(['onlyShipper', 'shipper_must_verify_email'])->group(function(
     Route::post('/quote', [QuoteController::class, 'getQuote']);
 
 });
+
+

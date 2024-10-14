@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-
+use Illuminate\Support\Facades\Log;
 class VerifyEmail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -23,6 +23,8 @@ class VerifyEmail extends Mailable
     public function __construct($mailData)
     {
         $this->mailData = $mailData;
+
+        Log::info('from mail' . print_r($this->mailData, true));
     }
 
     public function build()
