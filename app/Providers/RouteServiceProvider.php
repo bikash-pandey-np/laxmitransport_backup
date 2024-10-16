@@ -61,7 +61,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/driver.php'));
 
             Route::prefix('carrier')
-                ->as('carrier.')
                 ->namespace($this->namespace.'Carrier')
                 ->group(base_path('routes/carrier.php'));
 

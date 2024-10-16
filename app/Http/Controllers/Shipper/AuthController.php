@@ -93,6 +93,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), $rules, $msg);
 
         if ($validator->fails()) {
+
             return back()->withErrors($validator)->withInput();
         }
 

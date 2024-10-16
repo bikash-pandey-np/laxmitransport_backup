@@ -164,8 +164,10 @@ const Layout = ({ children }) => {
                     </div>
                 )}
             </nav>
-            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <main className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg shadow-xl">
                 {children}
+                </div>
             </main>
             <ToastContainer />
         </div>

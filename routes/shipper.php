@@ -40,7 +40,7 @@ Route::middleware(['onlyShipper'])->group(function(){
 });
 
 //protected routes
-Route::middleware(['onlyShipper', 'shipper_must_verify_email'])->group(function(){
+Route::middleware(['onlyShipper'])->group(function(){
 
     Route::get('/', function(){
         return redirect()->route('shipper.dashboard');

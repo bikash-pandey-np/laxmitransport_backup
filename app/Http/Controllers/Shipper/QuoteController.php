@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Shipper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+use Illuminate\Support\Facades\Validator;
 class QuoteController extends Controller
 {
     public function getQuotePage()
@@ -17,38 +17,40 @@ class QuoteController extends Controller
 
     public function getQuote(Request $request)
     {
+        dd($request->all());
         // Laravel Validation Rules
-        $rules = [
-            'loadType' => 'required|in:Parcel,LTL,TruckLoad',
-            'loadOrigin' => 'required',
-            'pickupDate' => 'required|date',
-            'deliverDestination' => 'required',
-            'items' => 'required_if:loadType,Parcel,LTL|array|min:1',
-            'items.*.description' => 'required',
-            'items.*.packagingType' => 'required',
-            'items.*.isStackable' => 'required|in:yes,no',
+        $validator = Validator::make($request->all(), [
+            'origin' => 'required|string|max:255',
+            'destination' => 'required|string|max:255',
+            'pickup_date' => 'required|date|after:today',
+            'instructions' => 'nullable|string|max:500',
+
+            'items' => 'required|array|min:1',
+            'items.*.description' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
-            'items.*.totalWeight' => 'required|numeric|min:0',
+            'items.*.weight' => 'required|numeric|min:0',
             'items.*.length' => 'required|numeric|min:0',
             'items.*.width' => 'required|numeric|min:0',
             'items.*.height' => 'required|numeric|min:0',
-            'truckType' => 'required_if:loadType,TruckLoad',
-            'deliveryDate' => 'required_if:loadType,TruckLoad',
-            'stops' => 'required_if:loadType,TruckLoad|array|min:1',
-            'stops.*.address' => 'required_if:loadType,TruckLoad',
-            'stops.*.items' => 'required_if:loadType,TruckLoad|array|min:1',
-            'stops.*.items.*.description' => 'required',
-            'stops.*.items.*.quantity' => 'required|integer|min:1',
-            'stops.*.items.*.totalWeight' => 'required|numeric|min:0',
-            'stops.*.items.*.length' => 'required|numeric|min:0',
-            'stops.*.items.*.width' => 'required|numeric|min:0',
-            'stops.*.items.*.height' => 'required|numeric|min:0',
-            'stops.*.items.*.packagingType' => 'required',
-            'stops.*.items.*.isStackable' => 'required|in:yes,no',
-            'specialDeliveryInstruction' => 'nullable',
-        ];
+        ],[
+            'origin.required' => 'The origin field is required.',
+            'destination.required' => 'The destination field is required.',
+            'pickup_date.required' => 'The pickup date field is required.',
+            'pickup_date.after' => 'The pickup date must be a date after today.',
+            'instructions.max' => 'The instructions may not be greater than 500 characters.',
+        
+            'items.required' => 'You must provide at least one item.',
+            'items.array' => 'The items must be an array.',
+            'items.min' => 'You must provide details for at least one item.',
+            'items.*.description.required' => 'The item description is required.',
+            'items.*.quantity.required' => 'The item quantity is required.',
+            'items.*.quantity.min' => 'The item quantity must be greater than 0.',
+            'items.*.weight.required' => 'The item weight is required.',
+            'items.*.length.required' => 'The item length is required.',
+            'items.*.width.required' => 'The item width is required.',
+            'items.*.height.required' => 'The item height is required.',
+        ]);
 
-        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
