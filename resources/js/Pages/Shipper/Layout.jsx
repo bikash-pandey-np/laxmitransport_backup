@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [flash]);
 
     const handleLogout = (e) => {
         e.preventDefault();

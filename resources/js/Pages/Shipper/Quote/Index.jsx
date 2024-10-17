@@ -7,12 +7,12 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState(0); // 0 for parcel, 1 for ltl and 2 for truckload
 
   const { data, setData, post, processing, errors } = useForm({
-    origin: '',
+    origin: 'Kathmandu',
     form_type: 'parcel',
-    destination: '',
+    destination: 'Kathmandu',
     pickup_date: '',
-    instructions: '',
-    items: [{ description: '', quantity: '', weight: '', length: '', height: '', width: '', isStackable: false, isHazard: false }],
+    instructions: 'Test',
+    items: [{ description: 'Test', quantity: '1', weight: '1', length: '1', height: '1', width: '1', isStackable: false, isHazard: false }],
   });
 
   const { data: truckLoadData, setData: setTruckLoadData, post: postTruckLoad, processing: truckLoadProcessing, errors: truckLoadErrors } = useForm({
@@ -39,11 +39,11 @@ const Index = () => {
 
   const handleTabChange = (index, value, is_truckload) => {
 
-    if(index == 0){
+    if (index == 0) {
       setData('form_type', 'parcel');
-    }else if(index == 1){
+    } else if (index == 1) {
       setData('form_type', 'ltl');
-    }else if(index == 2){
+    } else if (index == 2) {
       setTruckLoadData('form_type', 'truckload');
     }
     setActiveTab(index);
@@ -81,9 +81,32 @@ const Index = () => {
     setData('items', newItems);
   };
 
+  const clearParcelLtlForm = () => {
+    setData({
+      origin: '',
+      form_type: 'parcel',
+      destination: '',
+      pickup_date: '',
+      instructions: '',
+      items: [{
+        description: '',
+        quantity: '',
+        weight: '',
+        length: '',
+        height: '',
+        width: '',
+        isStackable: false,
+        isHazard: false
+      }],
+    });
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('submit', data);
+
     post('/shipper/quote'); // Update the endpoint as needed
+    clearParcelLtlForm();
   };
 
   const handleTruckLoadSubmit = (e) => {
@@ -126,6 +149,7 @@ const Index = () => {
     setTruckLoadData('stops', newStops);
   };
 
+
   const handleTruckLoadChange = (stopIndex, itemIndex, event) => {
     const newStops = [...truckLoadData.stops];
     if (itemIndex === undefined) {
@@ -135,6 +159,14 @@ const Index = () => {
     }
     setTruckLoadData('stops', newStops);
   };
+
+  const validate2NumberAfterDecimalTruckLoad = (stopIndex, itemIndex, event) => {
+    const value = parseFloat(event.target.value);
+    if (isNaN(value) || !/^\d+(\.\d{1,2})?$/.test(event.target.value)) {
+      event.target.value = '';
+      handleTruckLoadChange(stopIndex, itemIndex, event);
+    }
+  }
 
   const handleTruckLoadCheckboxChange = (stopIndex, itemIndex, event) => {
     const newStops = [...truckLoadData.stops];
@@ -147,6 +179,14 @@ const Index = () => {
       const newStops = [...truckLoadData.stops];
       newStops[stopIndex].items.splice(itemIndex, 1);
       setTruckLoadData('stops', newStops);
+    }
+  };
+
+  const validate2NumberAfterDecimal = (e, index) => {
+    const value = parseFloat(e.target.value);
+    if (isNaN(value) || !/^\d+(\.\d{1,2})?$/.test(e.target.value)) {
+      e.target.value = '';
+      handleItemChange(index, e);
     }
   };
 
@@ -264,6 +304,8 @@ const Index = () => {
                           value={item.weight}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Enter weight"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                         {errors[`items.${index}.weight`] && <span className="text-error">{errors[`items.${index}.weight`]}</span>}
                       </div>
@@ -280,6 +322,8 @@ const Index = () => {
                           value={item.length}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Length"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                         <input
                           type="number"
@@ -288,6 +332,8 @@ const Index = () => {
                           value={item.height}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Height"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                         <input
                           type="number"
@@ -296,6 +342,8 @@ const Index = () => {
                           value={item.width}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Width"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                       </div>
                       {(errors[`items.${index}.length`] || errors[`items.${index}.height`] || errors[`items.${index}.width`]) &&
@@ -452,6 +500,8 @@ const Index = () => {
                           value={item.weight}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Enter weight"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                         {errors[`items.${index}.weight`] && <span className="text-error">{errors[`items.${index}.weight`]}</span>}
                       </div>
@@ -468,6 +518,8 @@ const Index = () => {
                           value={item.length}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Length"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                         <input
                           type="number"
@@ -476,6 +528,8 @@ const Index = () => {
                           value={item.height}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Height"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                         <input
                           type="number"
@@ -484,6 +538,8 @@ const Index = () => {
                           value={item.width}
                           onChange={(e) => handleItemChange(index, e)}
                           placeholder="Width"
+                          step="0.01" // Allows increments of 0.01
+                          onBlur={(e) => validate2NumberAfterDecimal(e, index)}
                         />
                       </div>
                       {(errors[`items.${index}.length`] || errors[`items.${index}.height`] || errors[`items.${index}.width`]) &&
@@ -649,6 +705,8 @@ const Index = () => {
                               value={item.weight}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
                               placeholder="Weight"
+                              step="0.01" // Allows increments of 0.01
+                              onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
                           </div>
                         </div>
@@ -664,6 +722,8 @@ const Index = () => {
                               value={item.length}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
                               placeholder="Length"
+                              step="0.01" // Allows increments of 0.01
+                              onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
                           </div>
                           <div>
@@ -677,6 +737,8 @@ const Index = () => {
                               value={item.height}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
                               placeholder="Height"
+                              step="0.01" // Allows increments of 0.01
+                              onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
                           </div>
                           <div>
@@ -690,6 +752,8 @@ const Index = () => {
                               value={item.width}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
                               placeholder="Width"
+                              step="0.01" // Allows increments of 0.01
+                              onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
                           </div>
                         </div>

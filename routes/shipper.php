@@ -57,7 +57,8 @@ Route::middleware(['onlyShipper'])->group(function(){
     Route::get('/quote', [QuoteController::class, 'getQuotePage'])
         ->name('shipper.quote');
 
-    Route::post('/quote', [QuoteController::class, 'getQuote']);
+    Route::post('/quote', [QuoteController::class, 'getQuoteForParcelandLtl']);
+    
 
 });
 

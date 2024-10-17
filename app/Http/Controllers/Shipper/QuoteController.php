@@ -6,6 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Quote;
+use App\Models\QuoteItem;
+use App\Models\QuoteStop;
+use App\Models\QuoteStopItem;
+use Throwable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
+
 class QuoteController extends Controller
 {
     public function getQuotePage()
@@ -15,9 +24,8 @@ class QuoteController extends Controller
         ]);
     }
 
-    public function getQuote(Request $request)
+    public function getQuoteForParcelandLtl(Request $request)
     {
-        dd($request->all());
         // Laravel Validation Rules
         $validator = Validator::make($request->all(), [
             'origin' => 'required|string|max:255',
@@ -25,6 +33,7 @@ class QuoteController extends Controller
             'pickup_date' => 'required|date|after:today',
             'instructions' => 'nullable|string|max:500',
 
+            'form_type' => 'required|in:parcel,ltl,truckload',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
@@ -56,7 +65,43 @@ class QuoteController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        try{
 
-        dd('validation passed');
+            DB::beginTransaction();
+
+            $quote = Quote::create([
+                'load_type' => $request->form_type,
+                'origin' => $request->origin,
+                'destination' => $request->destination,
+                'pickup_date' => $request->pickup_date,
+                'instructions' => $request->instructions,
+                'shipper_id' => auth()->guard('shipper')->user()->id,
+            ]);
+
+            foreach($request->items as $item){
+                QuoteItem::create([
+                    'quote_id' => $quote->id,
+                    'description' => $item['description'],
+                    'quantity' => $item['quantity'],
+                    'weight' => $item['weight'],
+                    'length' => $item['length'],
+                    'width' => $item['width'],
+                    'height' => $item['height'],
+                    'is_stackable' => $item['isStackable'],
+                    'is_hazardous' => $item['isHazard'],
+                ]);
+            }   
+
+            DB::commit();
+
+            return back()->with('success', 'Quote created successfully');
+        }
+        catch(Throwable $e){
+            DB::rollBack();
+            Log::error('Error QuoteController@getQuoteForParcelandLtl: '.$e->getMessage() . ' on line ' . $e->getLine());
+            return back()->with('error', 'Something went wrong');
+        }
+
+
     }
 }
