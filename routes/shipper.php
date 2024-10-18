@@ -7,7 +7,7 @@ use App\Http\Controllers\Shipper\DashboardController;
 use App\Http\Controllers\Shipper\QuoteController;
 use Inertia\Inertia;
 
-Route::domain('shipper.laxmicloud.com')->group(function () {
+// Route::domain('shipper.laxmicloud.com')->group(function () {
     Route::prefix('register')->group(function () {
         Route::get('/', [AuthController::class, 'register'])
             ->name('shipper.auth.register')
@@ -55,4 +55,4 @@ Route::domain('shipper.laxmicloud.com')->group(function () {
 
         Route::post('/quote', [QuoteController::class, 'getQuoteForParcelandLtl']);
     });
-});
+// });

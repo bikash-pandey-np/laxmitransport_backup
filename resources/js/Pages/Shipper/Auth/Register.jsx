@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Select from '../Components/Form/Select';
 import axios from 'axios';
+import routes from '../lib/routes';
 
 import banner from '../images/register.jpg';
 
@@ -47,28 +48,28 @@ const Register = ({ flash, title }) => {
     }, [flash]);
 
     useEffect(() => {
-        axios.get('/shipper/location/states').then((res) => {
+        axios.get(routes.location.states).then((res) => {
             setStateOptions(res.data);
         });
     }, []);
 
     const handleStateChange = (e) => {
         setData('state', e.target.value);
-        axios.get(`/shipper/location/districts?state_id=${e.target.value}`).then((res) => {
+        axios.get(`${routes.location.districts}?state_id=${e.target.value}`).then((res) => {
             setDistrictOptions(res.data);
         });
     }
 
     const handleDistrictChange = (e) => {
         setData('district', e.target.value);
-        axios.get(`/shipper/location/local-bodies?district_id=${e.target.value}`).then((res) => {
+        axios.get(`${routes.location.localBodies}?district_id=${e.target.value}`).then((res) => {
             setLocalBodyOptions(res.data);
         });
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/shipper/register', {
+        post(routes.auth.register, {
             onSuccess: (data) => {
                 console.log('success clear FORM', data);
                 setData({
@@ -455,7 +456,7 @@ const Register = ({ flash, title }) => {
 
                                 <p className="mt-4 text-sm text-gray-500 sm:mt-0">
                                     Already have an account?
-                                    <a href="/shipper/login" className="text-gray-700 underline">Log in</a>.
+                                    <a href={routes.auth.login} className="text-gray-700 underline">Log in</a>.
                                 </p>
                             </div>
                         </form>

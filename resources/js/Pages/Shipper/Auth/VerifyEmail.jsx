@@ -5,6 +5,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { useForm } from '@inertiajs/inertia-react';
 import axios from 'axios';
+import routes from '../lib/routes';
 import { toast } from 'react-toastify';
 
 const VerifyEmail = ({email, title, flash}) => {
@@ -17,7 +18,7 @@ const VerifyEmail = ({email, title, flash}) => {
 
     const sendEmail = async () => { 
         try {
-            const response = await axios.post('/shipper/verify-email/send-email', {
+            const response = await axios.post(routes.auth.sendVerificationEmail, {
                 email: email,
             });
             console.log(response.data);
@@ -26,7 +27,7 @@ const VerifyEmail = ({email, title, flash}) => {
                 toast.error(response.data.message);
             } else {
                 if(response.data.status === 201){
-                    Inertia.visit('/shipper/dashboard');
+                    Inertia.visit(routes.dashboard);
                 }
 
                 if(response.data.status === 200){

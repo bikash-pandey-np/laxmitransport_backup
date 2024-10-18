@@ -4,8 +4,7 @@ import { Helmet } from 'react-helmet';
 import { ToastContainer, toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Select from '../Components/Form/Select';
-import axios from 'axios';
-
+import routes from '../lib/routes';
 import banner from '../images/register.jpg';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,7 +30,7 @@ const Login = ({ flash, title }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/shipper/login');
+        post(routes.auth.login);
     }
 
     const inputStyle = "peer border-none bg-transparent p-2 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0";
@@ -174,7 +173,7 @@ const Login = ({ flash, title }) => {
 
                                 <p className="mt-4 text-sm text-gray-500 sm:mt-0">
                                     Don't have an account?
-                                    <a href="/shipper/register" className="text-gray-700 underline">Register</a>.
+                                    <a href={routes.auth.register} className="text-gray-700 underline">Register</a>.
                                 </p>
                             </div>
                         </form>
