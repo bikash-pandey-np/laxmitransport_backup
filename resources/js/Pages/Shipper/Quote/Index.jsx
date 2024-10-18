@@ -8,12 +8,21 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState(0); // 0 for parcel, 1 for ltl and 2 for truckload
 
   const { data, setData, post, processing, errors } = useForm({
-    origin: 'Kathmandu',
-    form_type: 'parcel',
-    destination: 'Kathmandu',
+    origin: '',
+    form_type: '',
+    destination: '',
     pickup_date: '',
-    instructions: 'Test',
-    items: [{ description: 'Test', quantity: '1', weight: '1', length: '1', height: '1', width: '1', isStackable: false, isHazard: false }],
+    instructions: '',
+    items: [{ 
+      description: '', 
+      quantity: '', 
+      weight: '', 
+      length: '', 
+      height: '', 
+      width: '', 
+      isStackable: false, 
+      isHazard: false 
+    }],
   });
 
   const { data: truckLoadData, setData: setTruckLoadData, post: postTruckLoad, processing: truckLoadProcessing, errors: truckLoadErrors } = useForm({
@@ -112,7 +121,7 @@ const Index = () => {
 
   const handleTruckLoadSubmit = (e) => {
     e.preventDefault();
-    postTruckLoad(routes.quote); // Update the endpoint as needed
+    postTruckLoad(routes.truckloadQuote); // Update the endpoint as needed
   };
 
   const handleAddStop = () => {
@@ -674,12 +683,13 @@ const Index = () => {
                           </label>
                           <input
                             type="text"
-                            className="input input-bordered w-full"
+                            className={`input input-bordered w-full ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.description`] ? 'input-error' : ''}`}
                             name="description"
                             value={item.description}
                             onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
                             placeholder="Item description"
                           />
+                          {truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.description`] && <span className="text-error">{truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.description`]}</span>}
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div>
@@ -688,12 +698,13 @@ const Index = () => {
                             </label>
                             <input
                               type="number"
-                              className="input input-bordered w-full"
+                              className={`input input-bordered w-full ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.quantity`] ? 'input-error' : ''}`}
                               name="quantity"
                               value={item.quantity}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
                               placeholder="Quantity"
                             />
+                            {truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.quantity`] && <span className="text-error">{truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.quantity`]}</span>}
                           </div>
                           <div>
                             <label className="label">
@@ -701,7 +712,7 @@ const Index = () => {
                             </label>
                             <input
                               type="number"
-                              className="input input-bordered w-full"
+                              className={`input input-bordered w-full ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.weight`] ? 'input-error' : ''}`}
                               name="weight"
                               value={item.weight}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
@@ -709,6 +720,7 @@ const Index = () => {
                               step="0.01" // Allows increments of 0.01
                               onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
+                            {truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.weight`] && <span className="text-error">{truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.weight`]}</span>}
                           </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 mt-2">
@@ -718,7 +730,7 @@ const Index = () => {
                             </label>
                             <input
                               type="number"
-                              className="input input-bordered w-full"
+                              className={`input input-bordered w-full ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.length`] ? 'input-error' : ''}`}
                               name="length"
                               value={item.length}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
@@ -726,6 +738,7 @@ const Index = () => {
                               step="0.01" // Allows increments of 0.01
                               onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
+                            {truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.length`] && <span className="text-error">{truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.length`]}</span>}
                           </div>
                           <div>
                             <label className="label">
@@ -733,7 +746,7 @@ const Index = () => {
                             </label>
                             <input
                               type="number"
-                              className="input input-bordered w-full"
+                              className={`input input-bordered w-full ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.height`] ? 'input-error' : ''}`}
                               name="height"
                               value={item.height}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
@@ -741,6 +754,7 @@ const Index = () => {
                               step="0.01" // Allows increments of 0.01
                               onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
+                            {truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.height`] && <span className="text-error">{truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.height`]}</span>}
                           </div>
                           <div>
                             <label className="label">
@@ -748,7 +762,7 @@ const Index = () => {
                             </label>
                             <input
                               type="number"
-                              className="input input-bordered w-full"
+                              className={`input input-bordered w-full ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.width`] ? 'input-error' : ''}`}
                               name="width"
                               value={item.width}
                               onChange={(e) => handleTruckLoadChange(stopIndex, itemIndex, e)}
@@ -756,13 +770,14 @@ const Index = () => {
                               step="0.01" // Allows increments of 0.01
                               onBlur={(e) => validate2NumberAfterDecimalTruckLoad(stopIndex, itemIndex, e)}
                             />
+                            {truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.width`] && <span className="text-error">{truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.width`]}</span>}
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           <label className="label cursor-pointer">
                             <input
                               type="checkbox"
-                              className="checkbox checkbox-primary mr-2"
+                              className={`checkbox checkbox-primary mr-2 ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.isStackable`] ? 'input-error' : ''}`}
                               name="isStackable"
                               checked={item.isStackable}
                               onChange={(e) => handleTruckLoadCheckboxChange(stopIndex, itemIndex, e)}
@@ -772,7 +787,7 @@ const Index = () => {
                           <label className="label cursor-pointer">
                             <input
                               type="checkbox"
-                              className="checkbox checkbox-secondary mr-2"
+                              className={`checkbox checkbox-secondary mr-2 ${truckLoadErrors[`stops.${stopIndex}.items.${itemIndex}.isHazard`] ? 'input-error' : ''}`}
                               name="isHazard"
                               checked={item.isHazard}
                               onChange={(e) => handleTruckLoadCheckboxChange(stopIndex, itemIndex, e)}

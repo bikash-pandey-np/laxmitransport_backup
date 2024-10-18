@@ -8,6 +8,7 @@ const routes = {
     },
     dashboard: '/shipper/dashboard',
     quote: '/shipper/quote',
+    truckloadQuote: '/shipper/truckload-quote',
     location: {
         states: '/shipper/location/states',
         districts: '/shipper/location/districts',

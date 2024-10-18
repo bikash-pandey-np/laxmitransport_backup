@@ -54,5 +54,9 @@ use Inertia\Inertia;
             ->name('shipper.quote');
 
         Route::post('/quote', [QuoteController::class, 'getQuoteForParcelandLtl']);
+
+        Route::post('/truckload-quote', [QuoteController::class, 'getTruckLoadQuote']);
     });
+
+
 // });
