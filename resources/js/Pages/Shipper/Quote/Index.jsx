@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from '@inertiajs/inertia-react';
 import Layout from '../Layout';
 import { FaPlus, FaMapMarkerAlt, FaCalendarAlt, FaBoxOpen, FaWeightHanging, FaRuler, FaLayerGroup, FaExclamationTriangle, FaTrash } from 'react-icons/fa';
+import routes from '../lib/routes';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState(0); // 0 for parcel, 1 for ltl and 2 for truckload
@@ -105,13 +106,13 @@ const Index = () => {
     e.preventDefault();
     console.log('submit', data);
 
-    post('/shipper/quote'); // Update the endpoint as needed
+    post(routes.quote); // Update the endpoint as needed
     clearParcelLtlForm();
   };
 
   const handleTruckLoadSubmit = (e) => {
     e.preventDefault();
-    postTruckLoad('/shipper/quote'); // Update the endpoint as needed
+    postTruckLoad(routes.quote); // Update the endpoint as needed
   };
 
   const handleAddStop = () => {

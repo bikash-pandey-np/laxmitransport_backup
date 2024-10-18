@@ -68,7 +68,7 @@ const VerifyEmail = ({email, title, flash}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/shipper/verify');
+        post(routes.auth.verify);
         // Handle OTP verification logic here
     };
 
