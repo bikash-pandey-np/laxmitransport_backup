@@ -62,6 +62,7 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::prefix('carrier')
                 ->namespace($this->namespace.'Carrier')
+                ->as('carrier.')
                 ->group(base_path('routes/carrier.php'));
 
             Route::middleware('web')
